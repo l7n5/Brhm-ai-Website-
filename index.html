@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <title>AI Chat - Qwen V2.5</title>
@@ -8,20 +8,18 @@
       font-family: Arial, sans-serif;
       background: #1a1a2e;
       color: #f0f0f0;
+      margin: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
     }
 
     .chat-container {
-      width: 420px;
-      max-width: 90%;
+      width: 100%;
+      max-width: 600px;
+      height: 100vh;
       background: #2a2a4a;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      overflow: hidden;
       display: flex;
       flex-direction: column;
     }
@@ -117,7 +115,7 @@
 
       if (!userMessage) return;
 
-      // عرض رسالة المستخدم
+      // رسالة المستخدم
       const userDiv = document.createElement("div");
       userDiv.className = "message user";
       userDiv.textContent = userMessage;
@@ -126,14 +124,18 @@
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
-        // الاتصال بالـ API
-        const res = await fetch(`https://venom-ai-apis.vercel.app/Alibaba-Ai/Qwen-V2.5-VL?text=${encodeURIComponent(userMessage)}`);
-        const data = await res.json();
+        // الاتصال عبر AllOrigins لتجاوز CORS
+        const apiUrl = `https://venom-ai-apis.vercel.app/Alibaba-Ai/Qwen-V2.5-VL?text=${encodeURIComponent(userMessage)}`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
 
-        // عرض جواب البوت
+        const res = await fetch(proxyUrl);
+        const data = await res.json();
+        const content = JSON.parse(data.contents);
+
+        // رسالة البوت
         const botDiv = document.createElement("div");
         botDiv.className = "message bot";
-        botDiv.textContent = data.assistant.answer;
+        botDiv.textContent = content.assistant.answer || "⚠️ ماكو جواب";
         chatBox.appendChild(botDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
 
