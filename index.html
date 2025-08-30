@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Chat - Qwen V2.5</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a2e;
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-container {
+      width: 420px;
+      max-width: 90%;
+      background: #2a2a4a;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: #5e3ea1;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #7b5fc5;
+      color: #fff;
+      border-bottom-right-radius: 2px;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: #3e2f70;
+      color: #f0eaff;
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #444;
+      background: #22223a;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .chat-input button {
+      padding: 12px 20px;
+      border: none;
+      background: #5e3ea1;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .chat-input button:hover {
+      background: #7b5fc5;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">💜 Qwen AI Assistant</div>
+    <div class="chat-box" id="chatBox">
+      <div class="message bot">مرحباً 👋 اسألني أي شيء!</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="اكتب سؤالك هنا..." />
+      <button onclick="sendMessage()">إرسال</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+      const userMessage = input.value.trim();
+
+      if (!userMessage) return;
+
+      // عرض رسالة المستخدم
+      const userDiv = document.createElement("div");
+      userDiv.className = "message user";
+      userDiv.textContent = userMessage;
+      chatBox.appendChild(userDiv);
+      input.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        // الاتصال بالـ API
+        const res = await fetch(`https://venom-ai-apis.vercel.app/Alibaba-Ai/Qwen-V2.5-VL?text=${encodeURIComponent(userMessage)}`);
+        const data = await res.json();
+
+        // عرض جواب البوت
+        const botDiv = document.createElement("div");
+        botDiv.className = "message bot";
+        botDiv.textContent = data.assistant.answer;
+        chatBox.appendChild(botDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+      } catch (err) {
+        const botDiv = document.createElement("div");
+        botDiv.className = "message bot";
+        botDiv.textContent = "⚠️ حدث خطأ في الاتصال بالسيرفر.";
+        chatBox.appendChild(botDiv);
+      }
+    }
+  </script>
+</body>
+</html>
